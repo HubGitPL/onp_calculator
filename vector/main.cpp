@@ -103,9 +103,10 @@ void onpCalculation(List *list, int lengthOfAnswer){
             }
         }
         if (!isAnOperator(getElement(list, i)) &&
-        !isFunctionMin && !isFunctionMax){1
-            pushBack(s, strdup(getElement(list, i)));
+        !isFunctionMin && !isFunctionMax){
+            pushBack(s, getElement(list, i));
         } else {
+            c = new char[SIZE_OF_CHAR_C_SMALLER];
             if (strcmp(getElement(list, i), PLUS) == 0) {
                 coutPartialSolution(s, PLUS);
                 a = getLastElement(s);
@@ -113,7 +114,6 @@ void onpCalculation(List *list, int lengthOfAnswer){
                 b = getLastElement(s);
                 popBack(s);
                 result = atoi(a) + atoi(b);
-                c = new char[SIZE_OF_CHAR_C_SMALLER];
                 sprintf(c, "%d", result);
                 pushBack(s, c);
                 delete a;
@@ -125,7 +125,6 @@ void onpCalculation(List *list, int lengthOfAnswer){
                 b = getLastElement(s);
                 popBack(s);
                 result = atoi(b) - atoi(a);
-                c = new char[SIZE_OF_CHAR_C_SMALLER];
                 sprintf(c, "%d", result);
                 pushBack(s, c);
             } else if (strcmp(getElement(list, i), MULTIPLY) == 0) {
@@ -135,7 +134,6 @@ void onpCalculation(List *list, int lengthOfAnswer){
                 b = getLastElement(s);
                 popBack(s);
                 result = atoi(a) * atoi(b);
-                c = new char[SIZE_OF_CHAR_C_SMALLER];
                 sprintf(c, "%d", result);
                 pushBack(s, c);
                 delete a;
@@ -154,7 +152,6 @@ void onpCalculation(List *list, int lengthOfAnswer){
                     return;
                 }
                 result = atoi(b) / atoi(a);
-                c = new char[SIZE_OF_CHAR_C_SMALLER];
                 sprintf(c, "%d", result);
                 pushBack(s, c);
                 delete a;
@@ -178,7 +175,6 @@ void onpCalculation(List *list, int lengthOfAnswer){
                 a = getLastElement(s);
                 popBack(s);
                 result = -atoi(a);
-                c = new char[SIZE_OF_CHAR_C_SMALLER];
                 sprintf(c, "%d", result);
                 pushBack(s, c);
                 delete a;
@@ -202,7 +198,6 @@ void onpCalculation(List *list, int lengthOfAnswer){
                         }
                     }
                 }
-                c = new char[SIZE_OF_CHAR_C_SMALLER];
                 sprintf(c, "%d", result);
                 pushBack(s, c);
                 isFunctionMin = false;
@@ -222,12 +217,11 @@ void onpCalculation(List *list, int lengthOfAnswer){
                     if(sizeList(s) > 0) {
                         numberTemp = atoi(getLastElement(s));
                         popBack(s);
-                    }
-                    if(numberTemp > result){
-                        result = numberTemp;
+                        if(numberTemp > result){
+                            result = numberTemp;
+                        }
                     }
                 }
-                c = new char[SIZE_OF_CHAR_C_SMALLER];
                 sprintf(c, "%d", result);
                 pushBack(s, c);
                 isFunctionMax = false;
@@ -332,10 +326,11 @@ void toPostfix(){
         destroyClearList(s);
         printList(list);
         printf("\n");
+        delete[] tab[0];
+        delete[] tab;
         onpCalculation(list, sizeList(list));
         destroyClearList(list);
         printf("\n");
-        delete[] tab;
     }
 }
 int main() {
