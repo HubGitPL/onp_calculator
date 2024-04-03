@@ -1,8 +1,4 @@
 #pragma once
-#pragma warning(disable:4996)
-#ifdef _MSC_VER
-#define _CRT_SECURE_NO_WARNINGS
-#endif
 #include <iostream>
 #include <string.h>
 #include <stdio.h>
@@ -23,11 +19,15 @@
 #define COMA ","
 using namespace std;
 /*
- źródła:
- wyklad: slajd o ONP (pseudokod i kroki algorytmu), slajd o stosie
- https://eduinf.waw.pl/inf/utils/010_2010/0410.php
- Thomas H Cormen Introducing to Alghorithms
- https://pl.wikipedia.org/wiki/Odwrotna_notacja_polska
+źródła:
+wyklad: slajd o ONP (pseudokod i kroki algorytmu), slajd o stosie
+https://eduinf.waw.pl/inf/utils/010_2010/0410.php
+https://pl.wikipedia.org/wiki/Odwrotna_notacja_polska
+corrected version of toPostfix function
+https://en.m.wikipedia.org/wiki/Shunting_yard_algorithm
+books:
+Thomas H Cormen Introducing to Alghorithms
+stack implementation: Learn C the Hard Way: Practical Exercises on the Computational Subjects You Keep Avoiding (Like C) Zed A. Shaw
  */
 bool isLeftAssociative(const char character[]) {
     if (strcmp(character, PLUS) == 0 ||
@@ -84,6 +84,58 @@ void coutPartialSolution(List *list,const char* sign){
     printf("\n");
 }
 
+void handlingPlus(List *s){
+    int result;
+    char *a, *b, *c = new char[SIZE_OF_CHAR_C_SMALLER];
+    coutPartialSolution(s, PLUS);
+    a = getLastElement(s);
+    popBack(s);
+    b = getLastElement(s);
+    popBack(s);
+    result = atoi(a) + atoi(b);
+    snprintf(c, SIZE_OF_CHAR_C_SMALLER, "%d", result);
+    pushBack(s, strdup(c));
+    delete a;
+    delete b;
+    delete [] c;
+}
+
+void handlingMinus(List *s){
+    int result;
+    char *a, *b, *c = new char[SIZE_OF_CHAR_C_SMALLER];
+    coutPartialSolution(s, MINUS);
+    a = getLastElement(s);
+    popBack(s);
+    b = getLastElement(s);
+    popBack(s);
+    result = atoi(b) - atoi(a);
+    snprintf(c, SIZE_OF_CHAR_C_SMALLER, "%d", result);
+    pushBack(s, strdup(c));
+    delete a;
+    delete b;
+    delete [] c;
+}
+void handlingMuliplay(List *s){
+    int result;
+    char *a, *b , *c = new char[SIZE_OF_CHAR_C_SMALLER];
+    coutPartialSolution(s, MULTIPLY);
+    a = getLastElement(s);
+    popBack(s);
+    b = getLastElement(s);
+    popBack(s);
+    result = atoi(a) * atoi(b);
+    snprintf(c, SIZE_OF_CHAR_C_SMALLER, "%d", result);
+    pushBack(s, strdup(c));
+    delete a;
+    delete b;
+    delete [] c;
+}
+void handlingIF(){
+    //TODO
+}
+void handlingMIN(){
+    //TODO
+}
 void onpCalculation(List *list, int lengthOfAnswer){
     if(lengthOfAnswer == 0 && sizeList(list) == 0){
         return;
@@ -103,41 +155,16 @@ void onpCalculation(List *list, int lengthOfAnswer){
             }
         }
         if (!isAnOperator(getElement(list, i)) &&
-        !isFunctionMin && !isFunctionMax){
+            !isFunctionMin && !isFunctionMax){
             pushBack(s, getElement(list, i));
         } else {
             c = new char[SIZE_OF_CHAR_C_SMALLER];
             if (strcmp(getElement(list, i), PLUS) == 0) {
-                coutPartialSolution(s, PLUS);
-                a = getLastElement(s);
-                popBack(s);
-                b = getLastElement(s);
-                popBack(s);
-                result = atoi(a) + atoi(b);
-                sprintf(c, "%d", result);
-                pushBack(s, c);
-                delete a;
-                delete b;
+                handlingPlus(s);
             } else if (strcmp(getElement(list, i), MINUS) == 0) {
-                coutPartialSolution(s, MINUS);
-                a = getLastElement(s);
-                popBack(s);
-                b = getLastElement(s);
-                popBack(s);
-                result = atoi(b) - atoi(a);
-                sprintf(c, "%d", result);
-                pushBack(s, c);
+                handlingMinus(s);
             } else if (strcmp(getElement(list, i), MULTIPLY) == 0) {
-                coutPartialSolution(s, MULTIPLY);
-                a = getLastElement(s);
-                popBack(s);
-                b = getLastElement(s);
-                popBack(s);
-                result = atoi(a) * atoi(b);
-                sprintf(c, "%d", result);
-                pushBack(s, c);
-                delete a;
-                delete b;
+                handlingMuliplay(s);
             } else if (strcmp(getElement(list, i), DIVIDE) == 0) {
                 coutPartialSolution(s, DIVIDE);
                 a = getLastElement(s);
@@ -153,7 +180,7 @@ void onpCalculation(List *list, int lengthOfAnswer){
                 }
                 result = atoi(b) / atoi(a);
                 sprintf(c, "%d", result);
-                pushBack(s, c);
+                pushBack(s, strdup(c));
                 delete a;
                 delete b;
             }else if(strcmp(getElement(list, i), IF) == 0){
@@ -166,16 +193,18 @@ void onpCalculation(List *list, int lengthOfAnswer){
                 popBack(s);
                 if(atoi(c) > 0){
                     pushBack(s, b);
+                    delete a;
                 }
                 else{
                     pushBack(s, a);
+                    delete b;
                 }
             }else if (strcmp(getElement(list, i), N) == 0) {
                 coutPartialSolution(s, N);
                 a = getLastElement(s);
                 popBack(s);
                 result = -atoi(a);
-                sprintf(c, "%d", result);
+                snprintf(c, SIZE_OF_CHAR_C_SMALLER, "%d", result);
                 pushBack(s, c);
                 delete a;
             } else if (isFunctionMin) {
@@ -201,7 +230,7 @@ void onpCalculation(List *list, int lengthOfAnswer){
                 sprintf(c, "%d", result);
                 pushBack(s, c);
                 isFunctionMin = false;
-                delete number;
+                delete [] number;
             } else if (isFunctionMax) {
                 coutPartialSolution(s, getElement(list, i));
                 //wyciagniecie tylko liczby z v[i] czyli z MAXX tylko X
@@ -225,7 +254,7 @@ void onpCalculation(List *list, int lengthOfAnswer){
                 sprintf(c, "%d", result);
                 pushBack(s, c);
                 isFunctionMax = false;
-                delete number;
+                delete [] number;
             }
             else {
                 pushBack(s, getElement(list, i));
@@ -244,7 +273,7 @@ void toPostfix(){
         counterComas = 0;
         List *list = createList();
         char **tab = new char *[1]{
-            new char[SIZE_OF_CHAR_C]
+                new char[SIZE_OF_CHAR_C]
         };
         List *s = createList();
         int i = 0;
@@ -308,10 +337,10 @@ void toPostfix(){
                 } else {
                     priorityOfOperator = priorityNumber(tab[i]);
                     while (sizeList(s) > 0 &&
-                    strcmp(getElement(s, 0), "(") != 0 &&
-                            (priorityNumber(getElement(s, 0)) > priorityOfOperator ||
+                           strcmp(getElement(s, 0), "(") != 0 &&
+                           (priorityNumber(getElement(s, 0)) > priorityOfOperator ||
                             (priorityNumber(getElement(s, 0)) == priorityOfOperator &&
-                            isLeftAssociative(getElement(s, 0)) ) ) ) {
+                             isLeftAssociative(getElement(s, 0)) ) ) ) {
                         pushBack(list, strdup(getElement(s, 0)));
                         popFront(s);
                     }
@@ -337,5 +366,4 @@ int main() {
     toPostfix();
     return 0;
 }
-
 
