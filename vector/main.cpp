@@ -7,7 +7,6 @@
 #define SIZE_OF_CHAR_C 64
 #define SIZE_OF_CHAR_C_SMALLER 32
 
-
 #define PLUS "+"
 #define MINUS "-"
 #define MULTIPLY "*"
@@ -39,7 +38,6 @@ bool isLeftAssociative(const char character[]) {
         return false;
     }
 }
-
 bool isAnOperator(const char character[]){
     if(strcmp(character, PLUS) == 0 || strcmp(character, MINUS) == 0 || strcmp(character, MULTIPLY) == 0 || strcmp(character, DIVIDE) == 0 ||
        strcmp(character, MIN) == 0 || strcmp(character, MAX) == 0 || strcmp(character, N) == 0 || strcmp(character, "(") == 0 || strcmp(character, ")") == 0 ||
@@ -72,7 +70,6 @@ int priorityNumber(const char character[]){
             return 3;
         default:
             return 0; // coma
-
     }
 }
 void coutPartialSolution(List *list,const char* sign){
@@ -83,7 +80,6 @@ void coutPartialSolution(List *list,const char* sign){
     }
     printf("\n");
 }
-
 void handlingPlus(List *s){
     int result;
     char *a, *b, *c = new char[SIZE_OF_CHAR_C_SMALLER];
@@ -99,7 +95,6 @@ void handlingPlus(List *s){
     delete b;
     delete [] c;
 }
-
 void handlingMinus(List *s){
     int result;
     char *a, *b, *c = new char[SIZE_OF_CHAR_C_SMALLER];
@@ -308,13 +303,14 @@ void toPostfix(){
                         char* topChar = getElement(s, 0);
                         popFront(s);
                         if(strcmp(topChar, IF) == 0) {
-                            pushBack(list, strdup(topChar));
+                            pushBack(list, topChar);
                             counterComas = 0;
                         }else{
                             char* funcWithArgCounter = new char[SIZE_OF_CHAR_C_SMALLER];
                             sprintf(funcWithArgCounter, "%s%d", topChar, counterComas+1);
                             pushBack(list, strdup(funcWithArgCounter));
                             counterComas = 0;
+                            delete [] funcWithArgCounter;
                         }
                     }
                 }
@@ -366,4 +362,3 @@ int main() {
     toPostfix();
     return 0;
 }
-
